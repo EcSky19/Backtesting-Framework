@@ -38,6 +38,36 @@ class Strategy():
     """This base class will handle the execution logic of our trading strategies
     """
     def __init__(self):
+        self.current_idx = None
+        self.data = None
+        self.orders = []
+        self.trades = []
+    
+    def buy(self,ticker,size=1):
+        self.orders.append(
+            Order(
+                ticker = ticker,
+                side = 'buy',
+                size = size,
+                idx = self.current_idx
+            ))
+
+    def sell(self,ticker,size=1):
+        self.orders.append(
+            Order(
+                ticker = ticker,
+                side = 'sell',
+                size = -size,
+                idx = self.current_idx
+            ))
+        
+    @property
+    def position_size(self):
+        return sum([t.size for t in self.trades])
+        
+    def on_bar(self):
+        """This method will be overriden by our strategies.
+        """
         pass
     
 class Trade():
@@ -50,8 +80,21 @@ class Order():
     """When buying or selling, we first create an order object. 
     If the order is filled, we create a trade object.
     """
-    def __init__(self):
-        pass
+    def __init__(self, ticker, size, side, idx):
+        self.ticker = ticker
+        self.side = side
+        self.size = size
+        self.type = 'market'
+        self.idx = idx
+        
+class Trade():
+    def __init__(self, ticker,side,size,price,type,idx):
+        self.ticker = ticker
+        self.side = side
+        self.price = price
+        self.size = size
+        self.type = type
+        self.idx = idx
 
 import yfinance as yf
 
