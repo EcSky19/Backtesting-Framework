@@ -32,7 +32,24 @@ class Engine():
             
     def _fill_orders(self):
         # Fill orders from the previous period
-        pass
+        for order in self.strategy.orders:
+            can_fill = False
+            if order.side == 'buy' and self.cash >= self.data.loc[self.current_idx]['Open'] * order.size:
+                can_fill = True 
+            elif order.side == 'sell' and self.strategy.position_size >= order.size:
+                can_fill = True
+            if can_fill:
+                t = Trade(
+                    ticker = order.ticker,
+                    side = order.side,
+                    price= self.data.loc[self.current_idx]['Open'],
+                    size = order.size,
+                    type = order.type,
+                    idx = self.current_idx)
+
+                self.strategy.trades.append(t)
+                self.cash -= t.price * t.size
+        self.strategy.orders = []
     
 class Strategy():
     """This base class will handle the execution logic of our trading strategies
