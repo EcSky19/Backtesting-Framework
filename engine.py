@@ -50,7 +50,6 @@ class Engine():
                 self.strategy.trades.append(t)
                 self.cash -= t.price * t.size
         self.strategy.orders = []
-        #
     
 class Strategy():
     """This base class will handle the execution logic of our trading strategies
