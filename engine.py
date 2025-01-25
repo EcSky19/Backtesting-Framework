@@ -112,6 +112,8 @@ class Trade():
         self.size = size
         self.type = type
         self.idx = idx
+    def __repr__(self):
+        return f'<Trade: {self.idx} {self.ticker} {self.size}@{self.price}>'
 
 import yfinance as yf
 
