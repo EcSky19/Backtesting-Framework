@@ -3,12 +3,14 @@ from tqdm import tqdm
 
 
 class Order():
-    def __init__(self, ticker, size, side, idx):
+    def __init__(self, ticker, size, side, idx, limit_price=None, order_type='market'):
         self.ticker = ticker
         self.side = side
         self.size = size
         self.type = 'market'
         self.idx = idx
+        self.type = order_type
+        self.limit_price = limit_price
         
 class Trade():
     def __init__(self, ticker,side,size,price,type,idx):
