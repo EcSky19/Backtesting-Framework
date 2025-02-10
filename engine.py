@@ -48,14 +48,25 @@ class Strategy():
         
     def buy_limit(self,ticker,limit_price, size=1):
         self.orders.append(
-        Order(
-            ticker = ticker,
-            side = 'buy',
-            size = size,
-            limit_price=limit_price,
-            order_type='limit',
-            idx = self.current_idx
-        ))
+            Order(
+                ticker = ticker,
+                side = 'buy',
+                size = size,
+                limit_price=limit_price,
+                order_type='limit',
+                idx = self.current_idx
+            ))
+
+    def sell_limit(self,ticker,limit_price, size=1):
+        self.orders.append(
+            Order(
+                ticker = ticker,
+                side = 'sell',
+                size = -size,
+                limit_price=limit_price,
+                order_type='limit',
+                idx = self.current_idx
+            ))
         
     @property
     def position_size(self):
