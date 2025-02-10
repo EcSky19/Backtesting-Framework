@@ -112,29 +112,48 @@ class Engine():
         return self._get_stats()
                 
     def _fill_orders(self):
-        """this method fills buy and sell orders, creating new trade objects and adjusting the strategy's cash balance.
-        Conditions for filling an order:
-        - If we're buying, our cash balance has to be large enough to cover the order.
-        - If we are selling, we have to have enough shares to cover the order.
-        """
         for order in self.strategy.orders:
+            # FOR NOW, SET FILL PRICE TO EQUAL OPEN PRICE. THIS HOLDS TRUE FOR MARKET ORDERS
+            fill_price = self.data.loc[self.current_idx]['Open']
             can_fill = False
             if order.side == 'buy' and self.cash >= self.data.loc[self.current_idx]['Open'] * order.size:
+                if order.type == 'limit':
+                    # LIMIT BUY ORDERS ONLY GET FILLED IF THE LIMIT PRICE IS GREATER THAN OR EQUAL TO THE LOW PRICE
+                    if order.limit_price >= self.data.loc[self.current_idx]['Low']:
+                        ill_price = order.limit_price
+                        can_fill = True
+                        print(self.current_idx, 'Buy Filled. ', "limit",order.limit_price," / low", self.data.loc[self.current_idx]['Low'])
+
+                    else:
+                        print(self.current_idx,'Buy NOT filled. ', "limit",order.limit_price," / low", self.data.loc[self.current_idx]['Low'])
+                else:        
                     can_fill = True 
             elif order.side == 'sell' and self.strategy.position_size >= order.size:
-                    can_fill = True
-            if can_fill:
-                t = Trade(
-                    ticker = order.ticker,
-                    side = order.side,
-                    price= self.data.loc[self.current_idx]['Open'],
-                    size = order.size,
-                    type = order.type,
-                    idx = self.current_idx)
+                if order.type == 'limit':
+                    #LIMIT SELL ORDERS ONLY GET FILLED IF THE LIMIT PRICE IS LESS THAN OR EQUAL TO THE HIGH PRICE
+                    if order.limit_price <= self.data.loc[self.current_idx]['High']:
+                        fill_price = order.limit_price
+                        can_fill = True
+                        print(self.current_idx,'Sell filled. ', "limit",order.limit_price," / high", self.data.loc[self.current_idx]['High'])
 
-                self.strategy.trades.append(t)
-                self.cash -= t.price * t.size
-        self.strategy.orders = []
+                    else:
+                        print(self.current_idx,'Sell NOT filled. ', "limit",order.limit_price," / high", self.data.loc[self.current_idx]['High'])
+                else:
+                    can_fill = True
+                
+        if can_fill:
+            t = Trade(
+                ticker = order.ticker,
+                side = order.side,
+                price= fill_price,
+                size = order.size,
+                type = order.type,
+                idx = self.current_idx)
+
+            self.strategy.trades.append(t)
+            self.cash -= t.price * t.size
+
+    self.strategy.orders = []
     
     def _get_stats(self):
         metrics = {}
