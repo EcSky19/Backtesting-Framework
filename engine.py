@@ -115,4 +115,4 @@ class Engine():
         metrics = {}
         total_return = 100 *((self.data.loc[self.current_idx]['Close'] * self.strategy.position_size + self.cash) / self.initial_cash -1)
         metrics['total_return'] = total_return
-        return metrics
+        return metrics#
