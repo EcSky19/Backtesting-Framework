@@ -24,6 +24,10 @@ class Trade():
         return f'<Trade: {self.idx} {self.ticker} {self.size}@{self.price}>'
 
 class Strategy():
+    @property
+    def close(self):
+        return self.data.loc[self.current_idx]['Close']
+
     def __init__(self):
         self.current_idx = None
         self.data = None
